@@ -1,3 +1,12 @@
+// ******************** Autor ********************
+// Autor: Diego Alonso Trujillo
+// Webside: https://diego-trujillo-portafolio.herokuapp.com/
+
+// ******************** FIN CODIGO ********************
+
+
+
+
 const { response, request } = require("express");
 
 const usuariosGet = (req, res = response) => {

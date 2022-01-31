@@ -1,3 +1,11 @@
+// ******************** Autor ********************
+// Autor: Diego Alonso Trujillo
+// Webside: https://diego-trujillo-portafolio.herokuapp.com/
+
+// ******************** FIN CODIGO ********************
+
+
+
 const express = require("express");
 const cors = require("cors");
 
