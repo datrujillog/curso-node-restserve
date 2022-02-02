@@ -26,7 +26,7 @@ const usuarioSchema = new Schema({
     rol: {
         type: String,
         required: [true, "El rol es obligatorio"],
-        enum: ["ADMIN_ROLE", "USER_ROLE"],
+        enum: ["ADMIN_ROLE", "USER_ROLE", "VENTAS_ROLE"],
     },
     estado: {
         type: Boolean,
@@ -39,6 +39,12 @@ const usuarioSchema = new Schema({
 
 
 });
+
+usuarioSchema.methods.toJSON = function () { 
+    const { __v, password, ...usuario } = this.toObject();
+    return usuario;
+
+}
 
 module.exports = mongooose.model('Usuario', usuarioSchema);
 

@@ -10,7 +10,7 @@ const {
 } = require('express')
 const Usuario = require('../models/usuario.model')
 const bcryptjs = require('bcryptjs')
-// const
+// const { emailExiste } = require('../helpers/db-validatiors')
 
 const usuariosGet = (req, res = response) => {
     const {
@@ -31,71 +31,75 @@ const usuariosGet = (req, res = response) => {
     })
 }
 
-const usuariosPut = (req = request, res = response) => {
-    // validar si no hay id en la url
-    if (!req.params.id) {
-        res.status(400).json({
-            message: 'El id es necesario'
-        })
-    } else {
-        const id = req.params.id
-        res.json({
-            message: 'Put API - controlador usuarios',
-            id
-        })
+const usuariosPut = async (req = request, res = response) => {
+    const {
+        id
+    } = req.params
+    const {
+        _id,
+        password,
+        google,
+        correo,
+        ...resto
+    } = req.body
+
+
+    // TODO: validar CONTRA LA BASE DE DATOS
+
+    if (password) {
+        // encriptar el password
+        const salt = bcryptjs.genSaltSync()
+        resto.password = bcryptjs.hashSync(password, salt)
     }
+
+    const usuario = await Usuario.findByIdAndUpdate(id, resto, {
+        new: true,
+        runValidators: true
+    })
+
+    res.json({
+        message: 'Usuario actualizado con exito!!!',
+        usuario
+    })
 }
 
+
+
+
 const usuariosPost = async (req, res = response) => {
-
     try {
-
         const {
             nombre,
             correo,
             password,
             rol
         } = req.body
-    
+
         const usuario = new Usuario({
             nombre,
             correo,
             password,
             rol
         })
-    
-        // validar si el correo existe
-        const existeEmail = await Usuario.findOne({
-            correo
-        })
-    
-        if (existeEmail) {
-            return res.status(400).json({
-                msg: 'El correo ya existe'
-            })
-        }
-    console.log(existeEmail)
-        // encriptar el password
+
+        // // encriptar el password
         const salt = bcryptjs.genSaltSync()
         usuario.password = bcryptjs.hashSync(password, salt)
-    
+
         // / guardar el usuario en la base de datos
         await usuario.save()
-    
         res.json({
-            // msg: "Usuario guardado  con exito",
+            msg: 'Usuario registrado',
             usuario
         })
 
-        console.log(usuario)
-        
+        // console.log(usuario)
     } catch (error) {
         console.log(error)
-        res.status(500).json({ msg: 'Hubo un error' })
-        
-        
+        res.status(500).json({
+            msg: 'Hubo un error'
+        })
     }
-   
 }
 
 const usuariosDelete = (req, res = response) => {
