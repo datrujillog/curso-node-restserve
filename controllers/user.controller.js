@@ -12,24 +12,23 @@ const Usuario = require('../models/usuario.model')
 const bcryptjs = require('bcryptjs')
 // const { emailExiste } = require('../helpers/db-validatiors')
 
-const usuariosGet = (req, res = response) => {
+const usuariosGet = async (req, res = response) => {
     const {
-        q,
-        nombre = 'no mane',
-        apikey,
-        page = 2,
-        limit = 12
+        limite = 5, desde = 0
     } = req.query
-
+    const query = {
+        estado: true
+    }
+    const [total, usuarios] = await Promise.all([
+        Usuario.countDocuments(query),
+        Usuario.find(query).skip(Number(desde)).limit(Number(limite)),
+    ]);
     res.json({
-        message: 'Get API - controlador usuarios',
-        q,
-        nombre,
-        apikey,
-        page,
-        limit
+        total,
+        usuarios
     })
 }
+
 
 const usuariosPut = async (req = request, res = response) => {
     const {
@@ -57,14 +56,8 @@ const usuariosPut = async (req = request, res = response) => {
         runValidators: true
     })
 
-    res.json({
-        message: 'Usuario actualizado con exito!!!',
-        usuario
-    })
+    res.json(usuario)
 }
-
-
-
 
 const usuariosPost = async (req, res = response) => {
     try {
@@ -102,9 +95,25 @@ const usuariosPost = async (req, res = response) => {
     }
 }
 
-const usuariosDelete = (req, res = response) => {
+const usuariosDelete = async (req, res = response) => {
+
+    const {
+        id
+    } = req.params
+    
+    // Borrar fisicamente el registro de la base de datos
+    // const usuario = await Usuario.findByIdAndDelete(id)
+
+    // Cambiar el estado del registro a false 
+    const usuario = await Usuario.findByIdAndUpdate(id, {
+        estado: false
+    }, {
+        new: true
+    })
     res.json({
-        message: 'Delete API - controlador usuarios'
+        message: 'Usuario eliminado',
+        usuario,
+
     })
 }
 

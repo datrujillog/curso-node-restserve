@@ -27,31 +27,13 @@ router.get("/", usuariosGet);
 
 
 
-
-
-
-
 router.put("/:id", [
   check('id', 'El id  es obligatorio').isMongoId(),
   check('id').custom(existeUsuarioPorId),
   check('rol').custom(esRoleValido ),
-
-
-  
-
-  validarCampos,
-    
-
+  validarCampos,      
 
 ], usuariosPut);
-
-
-
-
-
-
-
-
 
 
 router.post('/', [
@@ -67,7 +49,15 @@ router.post('/', [
 ], usuariosPost);
 
 
-router.delete("/", usuariosDelete);
+router.delete('/:id', [
+  check('id', 'El id  es obligatorio').isMongoId(),
+  check('id').custom(existeUsuarioPorId),
+  validarCampos,      
+  
+], usuariosDelete);
+
+
+
 router.patch("/", usuariosPatch);
 router.get(" ", usuariosError);
 
